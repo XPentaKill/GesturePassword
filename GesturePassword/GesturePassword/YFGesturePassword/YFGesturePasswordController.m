@@ -140,10 +140,7 @@ static NSString *validPassword = nil;
                         [[NSUserDefaults standardUserDefaults] setObject:passwordFromUser forKey:@"gesturePassword"];
                         [[NSUserDefaults standardUserDefaults] synchronize];
                         
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                            // 退出当前控制器
-                            [bself dismissViewControllerAnimated:YES completion:nil];
-                        });
+                        [bself quitCurrentViewControllerAndLogin:NO];
                        
                         return YES;
                     }
@@ -167,7 +164,8 @@ static NSString *validPassword = nil;
                 
             }else{
                 if ([passwordFromUser isEqualToString:@"12345"]) {
-                    
+                    bself.alertLable.text = @"登录成功";
+                    [bself.alertLable.layer addAnimation:[bself animationForLableWithTextColor: [UIColor whiteColor]] forKey:nil];
                     return YES;
                 }else{
                     
@@ -177,15 +175,10 @@ static NSString *validPassword = nil;
                     if (errorCount == 0) {
                         // 输入次数已用完，需要验证用户身份
                         bself.alertLable.text = @"为了您的账户安全，请重新登录";
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                            
-#warning 这里要把当前用户强制下线
-                            
-                            // 退出当前控制器
-                            [bself dismissViewControllerAnimated:YES completion:nil];
-                        });
+                        #warning 这里要把当前用户强制下线
+                        
+                        [bself quitCurrentViewControllerAndLogin:YES];
                     }
-                    
                     [bself.alertLable.layer addAnimation:[bself animationForLableWithTextColor: [UIColor redColor]] forKey:nil];
                     
                     return NO;
@@ -205,6 +198,21 @@ static NSString *validPassword = nil;
     
     self.alertLable.textColor = textColor;
     return animation;
+}
+
+// 退出当前控制器，退出登录
+- (void)quitCurrentViewControllerAndLogin:(BOOL)quitLogin{
+    
+    if (quitLogin) {
+        // 退出登录
+#warning  这里强制让用户退出
+    }
+    
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        // 退出当前控制器
+        [self dismissViewControllerAnimated:YES completion:nil];
+    });
 }
 
 @end
